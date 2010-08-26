@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{ruby-imagespec}
-  s.version = "0.1.0"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Brandon Anderson", "Michael Sheakoski", "Mike Boone", "Dimitrij Denissenko"]
-  s.date = %q{2010-08-16}
+  s.date = %q{2010-08-26}
   s.description = %q{A lightweight module designed to extract the width/height dimensions of various image types. Also supports SWFs.}
   s.email = %q{dimitrij@blacksquaremedia.com}
   s.extra_rdoc_files = [
@@ -31,6 +31,11 @@ Gem::Specification.new do |s|
      "lib/parser/swf.rb",
      "ruby-imagespec.gemspec",
      "tasks/image_spec_tasks.rake",
+     "test/fixtures/corrupt.jpg",
+     "test/fixtures/leaderboard.jpg",
+     "test/fixtures/leaderboard.swf",
+     "test/fixtures/skyscraper.gif",
+     "test/fixtures/skyscraper.png",
      "test/image_spec_test.rb"
   ]
   s.homepage = %q{http://github.com/dim/ruby-imagespec}
