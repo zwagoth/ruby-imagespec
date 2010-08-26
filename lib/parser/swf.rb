@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'zlib'
 
 class ImageSpec
@@ -30,12 +31,12 @@ class ImageSpec
 
         # Determine the length of the uncompressed stream
         length = contents[4..7].unpack('V').join.to_i
-        
+
         # If we do, in fact, have compression
         if signature == 'CWS'
           # Decompress the body of the SWF
           body = Zlib::Inflate.inflate( contents[8..length] )
-          
+
           # And reconstruct the stream contents to the first 8 bytes (header)
           # Plus our decompressed body
           contents = contents[0..7] + body

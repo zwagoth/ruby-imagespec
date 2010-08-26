@@ -17,7 +17,8 @@ Gem::Specification.new do |s|
      "README"
   ]
   s.files = [
-    "LICENSE",
+    ".gitignore",
+     "LICENSE",
      "README",
      "Rakefile",
      "VERSION",
@@ -28,6 +29,7 @@ Gem::Specification.new do |s|
      "lib/parser/jpeg.rb",
      "lib/parser/png.rb",
      "lib/parser/swf.rb",
+     "ruby-imagespec.gemspec",
      "tasks/image_spec_tasks.rake",
      "test/image_spec_test.rb"
   ]

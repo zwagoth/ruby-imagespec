@@ -1,6 +1,7 @@
 Dir[File.join(File.dirname(__FILE__), 'parser/*.rb')].each { |parser| require parser }
 
 class ImageSpec
+  Error = Class.new(StandardError)
 
   module Parser
 
@@ -12,7 +13,7 @@ class ImageSpec
       formats.each do |format|
         return format.attributes(stream) if format.detected?(stream)
       end
-      raise "#{stream.inspect} is not a supported image format. Sorry bub :("
+      raise Error, "#{stream.inspect} is not a supported image format. Sorry bub :("
     end
 
   end

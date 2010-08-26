@@ -1,3 +1,4 @@
+# encoding: utf-8
 class ImageSpec
 
   module Parser
@@ -22,7 +23,7 @@ class ImageSpec
 
       def self.dimensions(stream)
         stream.rewind
-        raise 'malformed JPEG' unless stream.getc == 0xFF && stream.getc == 0xD8 # SOI
+        raise 'malformed JPEG' unless stream.getc.ord == 0xFF && stream.getc.ord == 0xD8 # SOI
 
         class << stream
           def readint
