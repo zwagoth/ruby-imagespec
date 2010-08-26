@@ -1,11 +1,11 @@
-# encoding: utf-8
+# encoding: ascii-8bit
 class ImageSpec
-
   module Parser
-
     class JPEG
 
       CONTENT_TYPE = 'image/jpeg'
+      TYPE_JFIF    = Regexp.new '^\xff\xd8\xff\xe0\x00\x10JFIF', nil, 'n'
+      TYPE_EXIF    = Regexp.new '^\xff\xd8\xff\xe1(.*){2}Exif', nil, 'n'
 
       def self.attributes(stream)
         width, height = dimensions(stream)
@@ -15,19 +15,18 @@ class ImageSpec
       def self.detected?(stream)
         stream.rewind
         case stream.read(10)
-          when /^\xff\xd8\xff\xe0\x00\x10JFIF/ then true
-          when /^\xff\xd8\xff\xe1(.*){2}Exif/  then true
-          else false
+        when TYPE_JFIF, TYPE_EXIF then true
+        else false
         end
       end
 
       def self.dimensions(stream)
         stream.rewind
-        raise 'malformed JPEG' unless stream.getc.ord == 0xFF && stream.getc.ord == 0xD8 # SOI
+        raise ImageSpec::Error, 'malformed JPEG' unless stream.readbyte.chr == "\xFF" && stream.readbyte.chr == "\xD8" # SOI
 
         class << stream
           def readint
-            (readchar << 8) + readchar
+            (readbyte.ord << 8) + readbyte.ord
           end
 
           def readframe
@@ -35,28 +34,26 @@ class ImageSpec
           end
 
           def readsof
-            [readint, readchar, readint, readint, readchar]
+            [readint, readbyte.chr, readint, readint, readbyte.chr]
           end
 
           def next
-            c = readchar while c != 0xFF
-            c = readchar while c == 0xFF
+            c = readbyte.chr while c != "\xFF"
+            c = readbyte.chr while c == "\xFF"
             c
           end
         end
 
         while marker = stream.next
           case marker
-          when 0xC0..0xC3, 0xC5..0xC7, 0xC9..0xCB, 0xCD..0xCF
+          when "\xC0".."\xC3", "\xC5".."\xC7", "\xC9".."\xCB", "\xCD".."\xCF"
             length, bits, height, width, components = stream.readsof
-            raise 'malformed JPEG' unless length == 8 + components * 3
+            raise ImageSpec::Error, 'malformed JPEG' unless length == 8 + components[0].ord * 3
             return [width, height]
-          when 0xD9, 0xDA
+          when "\xD9", "\xDA"
             break
-          when 0xFE
+          when "\xFE"
             @comment = stream.readframe
-          when 0xE1
-            stream.readframe
           else
             stream.readframe
           end
@@ -64,7 +61,5 @@ class ImageSpec
       end
 
     end
-
   end
-
 end

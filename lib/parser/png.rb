@@ -1,8 +1,6 @@
-# encoding: utf-8
+# encoding: ascii-8bit
 class ImageSpec
-
   module Parser
-
     class PNG
 
       CONTENT_TYPE = 'image/png'
@@ -23,7 +21,5 @@ class ImageSpec
       end
 
     end
-
   end
-
 end

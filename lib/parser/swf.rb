@@ -1,10 +1,8 @@
-# encoding: utf-8
+# encoding: ascii-8bit
 require 'zlib'
 
 class ImageSpec
-
   module Parser
-
     class SWF
 
       CONTENT_TYPE = 'application/x-shockwave-flash'
@@ -72,7 +70,5 @@ class ImageSpec
       end
 
     end
-
   end
-
 end

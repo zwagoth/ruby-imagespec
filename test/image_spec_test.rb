@@ -7,7 +7,7 @@ class ImageSpecTest < Test::Unit::TestCase
   # Replace this with your real tests.
 
   def fixture(name)
-    File.open File.expand_path("../fixtures/#{name}", __FILE__)
+    File.open File.expand_path("../fixtures/#{name}", __FILE__), 'r:ASCII-8BIT'
   end
 
   def assert_spec(values, spec)
