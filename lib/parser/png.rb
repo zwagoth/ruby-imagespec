@@ -7,7 +7,7 @@ class ImageSpec
 
       def self.attributes(stream)
         width, height = dimensions(stream)
-        {:width => width, :height => height, :content_type => CONTENT_TYPE}
+        {:width => width, :height => height, :content_type => CONTENT_TYPE, :dimensions => [width, height], :file_size => size(stream)}
       end
 
       def self.detected?(stream)
@@ -18,6 +18,10 @@ class ImageSpec
       def self.dimensions(stream)
         stream.seek(0x10)
         stream.read(8).unpack('NN')
+      end
+
+      def self.size(stream)
+        stream.size
       end
 
     end
