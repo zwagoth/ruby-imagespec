@@ -21,7 +21,7 @@ class ImageSpec
         # Read the entire stream into memory because the
         # dimensions aren't stored in a standard location
         stream.rewind
-        contents = stream.read
+        contents = stream.read.force_encoding("ASCII-8BIT")
 
         # Our 'signature' is the first 3 bytes
         # Either FWS or CWS.  CWS indicates compression
