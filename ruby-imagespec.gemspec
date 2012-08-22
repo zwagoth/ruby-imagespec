@@ -7,14 +7,14 @@ Gem::Specification.new do |s|
 
   s.name        = "ruby-imagespec"
   s.summary     = "Image/Flash extract width/height dimensions extractor"
-  s.version     = "0.3.0"
+  s.version     = "0.3.1"
 
   s.authors     = ["Brandon Anderson", "Michael Sheakoski", "Mike Boone", "Dimitrij Denissenko"]
   s.email       = "dimitrij@blacksquaremedia.com"
   s.homepage    = "http://github.com/dim/ruby-imagespec"
 
   s.require_path = 'lib'
-  s.files        = Dir['VERSION', 'README', 'init.rb', 'lib/**/*']
+  s.files        = Dir['README', 'init.rb', 'lib/**/*']
 
   s.add_development_dependency 'rake'
 end
