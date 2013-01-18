@@ -41,7 +41,7 @@ class ImageSpec
         end
 
         # Determine the nbits of our dimensions rectangle
-        nbits =contents.unpack('c'*contents.length)[8] >> 3
+        nbits = contents.unpack('C'*contents.length)[8] >> 3
 
         # Determine how many bits long this entire RECT structure is
         rectbits = 5 + nbits * 4    # 5 bits for nbits, as well as nbits * number of fields (4)
