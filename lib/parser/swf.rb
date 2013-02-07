@@ -8,8 +8,8 @@ class ImageSpec
       CONTENT_TYPE = 'application/x-shockwave-flash'
 
       def self.attributes(stream)
-        width, height = dimensions(stream)
-        {:width => width, :height => height, :content_type => CONTENT_TYPE, :dimensions => [width, height], :file_size => size(stream)}
+        width, height, version = dimensions(stream)
+        {:width => width, :height => height, :content_type => CONTENT_TYPE, :version => version, :dimensions => [width, height], :file_size => size(stream)}
       end
 
       def self.detected?(stream)
@@ -26,6 +26,9 @@ class ImageSpec
         # Our 'signature' is the first 3 bytes
         # Either FWS or CWS.  CWS indicates compression
         signature = contents[0..2]
+
+        # SWF version
+        version = contents[3].unpack('C').join.to_i
 
         # Determine the length of the uncompressed stream
         length = contents[4..7].unpack('V').join.to_i
@@ -66,7 +69,7 @@ class ImageSpec
         height  = (dimensions[3] - dimensions[2]) / 20
 
         # If you can't figure this one out, you probably shouldn't have read this far
-        return [width, height]
+        return [width, height, version]
       end
 
       def self.size(stream)
