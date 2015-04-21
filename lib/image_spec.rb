@@ -1,5 +1,5 @@
 require 'open-uri'
-require File.join(File.dirname(__FILE__), 'parser')
+require File.join(File.dirname(__FILE__), 'image_spec/parser')
 
 class ImageSpec
 
