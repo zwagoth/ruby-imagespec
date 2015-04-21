@@ -1,7 +1,7 @@
 require 'open-uri'
-require File.join(File.dirname(__FILE__), 'image_spec/parser')
 
 class ImageSpec
+  Error = Class.new(StandardError)
 
   def initialize(file)
     @attributes = Parser.parse(stream_for(file))
@@ -27,4 +27,8 @@ class ImageSpec
     end
   end
 
+end
+
+%w|parser|.each do |name|
+  require "image_spec/#{name}"
 end

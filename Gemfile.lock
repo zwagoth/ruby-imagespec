@@ -6,7 +6,10 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
-    rake (0.9.2.2)
+    power_assert (0.2.3)
+    rake (10.4.2)
+    test-unit (3.0.9)
+      power_assert
 
 PLATFORMS
   ruby
@@ -14,3 +17,4 @@ PLATFORMS
 DEPENDENCIES
   rake
   ruby-imagespec!
+  test-unit
