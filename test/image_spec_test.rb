@@ -30,6 +30,10 @@ class ImageSpecTest < Test::Unit::TestCase
     assert_spec [728, 90, "application/x-shockwave-flash", [728, 90], 20247], ImageSpec.new(fixture('leaderboard.swf'))
   end
 
+  def test_identifying_bmp
+    assert_spec [120, 600, "image/bmp", [120, 600], 36202], ImageSpec.new(fixture('skyscraper.bmp'))
+  end
+
   def test_corrupted_files
     assert_raises(ImageSpec::Error) { ImageSpec.new(fixture('corrupt.jpg')) }
   end
