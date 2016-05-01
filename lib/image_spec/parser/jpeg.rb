@@ -15,11 +15,15 @@ class ImageSpec::Parser::JPEG
 
   def self.dimensions(stream)
     stream.rewind
-    raise ImageSpec::Error, 'malformed JPEG' unless stream.readbyte.chr == "\xFF" && stream.readbyte.chr == "\xD8" # SOI
+    raise ImageSpec::Error, 'malformed JPEG' unless detected?(stream)
 
     class << stream
+      def readbyte
+        read(1)[0].ord
+      end
+
       def readint
-        (readbyte.ord << 8) + readbyte.ord
+        read(2).unpack('n')[0]
       end
 
       def readframe
@@ -27,26 +31,26 @@ class ImageSpec::Parser::JPEG
       end
 
       def readsof
-        [readint, readbyte.chr, readint, readint, readbyte.chr]
+        [readint, readbyte, readint, readint, readbyte]
       end
 
       def next
-        c = readbyte.chr while c != "\xFF"
-        c = readbyte.chr while c == "\xFF"
+        c = readbyte while c != 0xFF
+        c = readbyte while c == 0xFF
         c
       end
     end
 
     while marker = stream.next
       case marker
-      when "\xC0".."\xC3", "\xC5".."\xC7", "\xC9".."\xCB", "\xCD".."\xCF"
+      when 0xC0..0xC3, 0xC5..0xC7, 0xC9..0xCB, 0xCD..0xCF
         length, bits, height, width, components = stream.readsof
-        raise ImageSpec::Error, 'malformed JPEG' unless length == 8 + components[0].ord * 3
+        raise ImageSpec::Error, 'malformed JPEG' unless length == 8 + components * 3
         return [width, height]
-      when "\xD9", "\xDA"
+      when 0xD9, 0xDA
         break
-      when "\xFE"
-        @comment = stream.readframe
+      when 0xFE
+        stream.readframe
       else
         stream.readframe
       end
