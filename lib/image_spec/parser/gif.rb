@@ -53,9 +53,9 @@ class ImageSpec::Parser::GIF
         
         #Extension block
         if type == "!"
-          type = stream.read(1)
+          type = fullread(stream, 1)
           if type == "\xF9" #Graphic Control Extension
-            gce_len = self.fullread(stream, 1).unpack("C")[0]
+            gce_len = fullread(stream, 1).unpack("C")[0]
             if gce_len == 4 #We only know the 4 byte version
               duration = duration + self.fullread(stream, 4).unpack("CS<C")[1]
             else
@@ -68,7 +68,7 @@ class ImageSpec::Parser::GIF
           stream.seek(8, IO::SEEK_CUR)
           
           #Local colour table flags
-          lct_flags = self.fullread(stream, 1).unpack("C")[0]
+          lct_flags = fullread(stream, 1).unpack("C")[0]
           
           if lct_flags & 0x80 == 0x80
             stream.seek(3 << ((lct_flags & 7) + 1), IO::SEEK_CUR)
@@ -81,7 +81,7 @@ class ImageSpec::Parser::GIF
         
         #Skip over the rest of the block's trailer
         while true do
-          l = self.fullread(stream, 1).unpack("C")[0]
+          l = fullread(stream, 1).unpack("C")[0]
           break if l == 0
           stream.seek(l, IO::SEEK_CUR)
         end
