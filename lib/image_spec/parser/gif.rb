@@ -22,6 +22,12 @@ class ImageSpec::Parser::GIF
     stream.size
   end
   
+  def self.fullread(stream, size)
+    data = stream.read(size)
+    raise EOFError if data.nil? || data.length != size
+    return data
+  end
+  
   #Heavily referenced from http://stackoverflow.com/a/7506880
   #gcinfo because graphics control info
   def self.gcinfo(stream)
@@ -30,9 +36,7 @@ class ImageSpec::Parser::GIF
       stream.seek(10, IO::SEEK_SET)
       
       #Skip some data and jump over the colour table
-      bFlags = stream.read(1)
-      raise ImageSpec::Error, "Malformed GIF, EOF reached before end of file marker!" if bFlags.nil?
-      gct_flags = bFlags.unpack("C")[0]
+      gct_flags = fullread(stream, 1).unpack("C")[0]
       
       stream.seek(2, IO::SEEK_CUR)
       
@@ -43,8 +47,7 @@ class ImageSpec::Parser::GIF
       frames = 0
       duration = 0.0
       while true do #For each block
-        type = stream.read(1)
-        raise ImageSpec::Error, "Malformed GIF, EOF reached before end of file marker!" if type.nil?
+        type = self.fullread(stream, 1)
         #EOF block
         break if type == ";"
         
@@ -52,13 +55,9 @@ class ImageSpec::Parser::GIF
         if type == "!"
           type = stream.read(1)
           if type == "\xF9" #Graphic Control Extension
-            bLen = stream.read(1)
-            raise ImageSpec::Error, "Malformed GIF, EOF reached before end of file marker!" if bLen.nil?
-            gce_len = bLen.unpack("C")[0]
+            gce_len = self.fullread(stream, 1).unpack("C")[0]
             if gce_len == 4 #We only know the 4 byte version
-              bInfo = stream.read(4)
-              raise ImageSpec::Error, "Malformed GIF, EOF reached before end of file marker!" if bInfo.nil?
-              duration = duration + bInfo.unpack("CS<C")[1]
+              duration = duration + self.fullread(stream, 4).unpack("CS<C")[1]
             else
               stream.seek(gce_len)
             end
@@ -69,9 +68,7 @@ class ImageSpec::Parser::GIF
           stream.seek(8, IO::SEEK_CUR)
           
           #Local colour table flags
-          bFlags = stream.read(1)
-          raise ImageSpec::Error, "Malformed GIF, EOF reached before end of file marker!" if bFlags.nil?
-          lct_flags = bFlags.unpack("C")[0]
+          lct_flags = self.fullread(stream, 1).unpack("C")[0]
           
           if lct_flags & 0x80 == 0x80
             stream.seek(3 << ((lct_flags & 7) + 1), IO::SEEK_CUR)
@@ -84,9 +81,7 @@ class ImageSpec::Parser::GIF
         
         #Skip over the rest of the block's trailer
         while true do
-          bLen = stream.read(1)
-          raise ImageSpec::Error, "Malformed GIF, EOF reached before end of file marker!" if bLen.nil?
-          l = bLen.unpack("C")[0]
+          l = self.fullread(stream, 1).unpack("C")[0]
           break if l == 0
           stream.seek(l, IO::SEEK_CUR)
         end
