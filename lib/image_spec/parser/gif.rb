@@ -97,7 +97,7 @@ class ImageSpec::Parser::GIF
       end
       
       #boop
-      return [duration/100, frames]
+      return [duration / 100.0, frames]
     rescue EOFError
       raise ImageSpec::Error, "Malformed GIF, EOF reached before end of file marker!"
     end
