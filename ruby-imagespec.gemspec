@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
 
   s.name        = "ruby-imagespec"
   s.summary     = "Image/Flash extract width/height dimensions extractor"
-  s.version     = "0.4.1"
+  s.version     = "0.4.2"
 
   s.authors     = ["Brandon Anderson", "Michael Sheakoski", "Mike Boone", "Dimitrij Denissenko"]
   s.email       = "dimitrij@blacksquaremedia.com"
