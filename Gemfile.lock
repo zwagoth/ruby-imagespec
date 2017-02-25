@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ruby-imagespec (0.4.1)
+    ruby-imagespec (0.4.2)
 
 GEM
   remote: http://rubygems.org/
@@ -19,3 +19,6 @@ DEPENDENCIES
   rake
   ruby-imagespec!
   test-unit
+
+BUNDLED WITH
+   1.10.3
