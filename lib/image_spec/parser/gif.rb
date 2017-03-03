@@ -94,10 +94,12 @@ class ImageSpec::Parser::GIF
       elsif frames == 1
         #CASE: Gif contains 1 frame but has a duration greater than zero
         duration = 0
-      end
+	  else
+	    duration /= 100.0
+	  end
       
       #boop
-      return [duration / 100.0, frames]
+      return [duration, frames]
     rescue EOFError
       raise ImageSpec::Error, "Malformed GIF, EOF reached before end of file marker!"
     end
