@@ -4,8 +4,8 @@ class ImageSpec::Parser::JPEG
   CONTENT_TYPE = 'image/jpeg'
 
   def self.attributes(stream)
-    width, height = dimensions(stream)
-    {:width => width, :height => height, :content_type => CONTENT_TYPE, :dimensions => [width, height], :file_size => size(stream)}
+    width, height, remaining = dimensions(stream)
+    {width: width, heigh: height, content_type: CONTENT_TYPE, dimensions: [width, height], file_size: size(stream), trailing_bytes: remaining}
   end
 
   def self.detected?(stream)
@@ -41,12 +41,15 @@ class ImageSpec::Parser::JPEG
       end
     end
 
+    width = height = -1
+
     while marker = stream.next
       case marker
       when 0xC0..0xC3, 0xC5..0xC7, 0xC9..0xCB, 0xCD..0xCF
-        length, bits, height, width, components = stream.readsof
+        length, bits, hheight, wwidth, components = stream.readsof
+        height = hheight
+        width = wwidth
         raise ImageSpec::Error, 'malformed JPEG' unless length == 8 + components * 3
-        return [width, height]
       when 0xD9, 0xDA
         break
       when 0xFE
@@ -55,6 +58,11 @@ class ImageSpec::Parser::JPEG
         stream.readframe
       end
     end
+
+    current_pos = stream.pos
+    stream.seek(0, IO::SEEK_END)
+    remaining = stream.pos - current_pos
+    return [width, height, remaining]
   end
 
   def self.size(stream)

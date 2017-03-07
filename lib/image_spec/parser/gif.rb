@@ -4,8 +4,8 @@ class ImageSpec::Parser::GIF
 
   def self.attributes(stream)
     width, height = dimensions(stream)
-    duration, frames = gcinfo(stream)
-    {:width => width, :height => height, :content_type => CONTENT_TYPE, :dimensions => [width, height], :file_size => size(stream), :duration => duration, :frames => frames}
+    duration, frames, remaining = gcinfo(stream)
+    {width: width, height: height, content_type: CONTENT_TYPE, dimensions: [width, height], file_size: size(stream), duration: duration, frames: frames, trailing_bytes: remaining}
   end
 
   def self.detected?(stream)
@@ -88,6 +88,10 @@ class ImageSpec::Parser::GIF
         end
       end
 
+      current_pos = stream.pos
+      stream.seek(0, IO::SEEK_END)
+      remaining_bytes = stream.pos - current_pos
+
       #Correction for GIFs made with software that can't even follow specs
       if duration == 0 and frames > 1
         #CASE: Gif contains multiple frames but zero delay
@@ -100,7 +104,7 @@ class ImageSpec::Parser::GIF
       end
 
       #boop
-      return [duration, frames]
+      return [duration, frames, remaining_bytes]
     rescue EOFError
       raise ImageSpec::Error, "Malformed GIF, EOF reached before end of file marker!"
     end
