@@ -13,6 +13,6 @@ module ImageSpec::Parser
 
 end
 
-%w|gif jpeg png swf bmp|.each do |name|
+%w|gif jpeg png swf|.each do |name|
   require "image_spec/parser/#{name}"
 end
