@@ -18,16 +18,22 @@ class ImageSpec::Parser::JPEG
     raise ImageSpec::Error, 'malformed JPEG' unless detected?(stream)
 
     class << stream
+      def fullread(size)
+        data = read(size)
+        raise EOFError if data.nil? || data.length != size
+        return data
+      end
+
       def readbyte
-        read(1)[0].ord
+        fullread(1)[0].ord
       end
 
       def readint
-        read(2).unpack('n')[0]
+        fullread(2).unpack('n')[0]
       end
 
       def readframe
-        read(readint - 2)
+        fullread(readint - 2)
       end
 
       def readsof
@@ -43,19 +49,39 @@ class ImageSpec::Parser::JPEG
 
     width = height = -1
 
-    while marker = stream.next
-      case marker
-      when 0xC0..0xC3, 0xC5..0xC7, 0xC9..0xCB, 0xCD..0xCF
-        length, bits, hheight, wwidth, components = stream.readsof
-        height = hheight
-        width = wwidth
-        raise ImageSpec::Error, 'malformed JPEG' unless length == 8 + components * 3
-      when 0xD9, 0xDA
-        break
-      when 0xFE
-        stream.readframe
+    marker = stream.readbyte
+    while true
+      if marker == 0xFF
+        marker <<= 8
+        marker |= stream.readbyte
       else
-        stream.readframe
+        marker = stream.readbyte
+        next
+      end
+
+      case marker
+        when 0x0, 0xFFFF # JUNK
+          marker = 0xFF
+        when 0xFF00 # padded 0xFF
+          marker = stream.readbyte
+        when 0xFFC0..0xFFC3, 0xFFC5..0xFFC7, 0xFFC9..0xFFCB, 0xFFCD..0xFFCF # SOF markers
+          length, bits, hheight, wwidth, components = stream.readsof
+          height = hheight
+          width = wwidth
+          raise ImageSpec::Error, 'malformed JPEG' unless length == 8 + components * 3
+        when 0xFFD9 # EOI marker
+          break
+        when 0xFFC4, 0xFFCC # Huffman table, arithmetic coding condition
+          stream.readframe
+          marker = stream.readbyte
+        when 0xFFC8 # Extension
+          marker = stream.readbyte
+        when 0xFFD0..0xFFD7, 0xFFD8, 0xFFF0..0xFFFE # Restart Markers, SOI, Extensions, Comments
+          marker = stream.readbyte
+        else
+          stream.readframe
+          marker = stream.readbyte
+          # raise ImageSpec::Error, "malformed JPEG no marker: #{sprintf('%x', marker)}"
       end
     end
 
