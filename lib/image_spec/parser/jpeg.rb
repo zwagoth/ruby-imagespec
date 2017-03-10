@@ -5,7 +5,7 @@ class ImageSpec::Parser::JPEG
 
   def self.attributes(stream)
     width, height, remaining = dimensions(stream)
-    {width: width, heigh: height, content_type: CONTENT_TYPE, dimensions: [width, height], file_size: size(stream), trailing_bytes: remaining}
+    {width: width, height: height, content_type: CONTENT_TYPE, dimensions: [width, height], file_size: size(stream), trailing_bytes: remaining}
   end
 
   def self.detected?(stream)
