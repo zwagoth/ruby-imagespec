@@ -6,7 +6,7 @@ class ImageSpec::Parser::SWF
 
   def self.attributes(stream)
     width, height, version = dimensions(stream)
-    {:width => width, :height => height, :content_type => CONTENT_TYPE, :version => version, :dimensions => [width, height], :file_size => size(stream)}
+    {:width => width, :height => height, :content_type => CONTENT_TYPE, :version => version, :dimensions => [width, height], :file_size => size(stream), trailing_bytes: 0}
   end
 
   def self.detected?(stream)
